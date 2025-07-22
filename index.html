@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADVANCE DARKSEND</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        #header {
+            border-bottom: 1px dashed #0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        #title {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #0f0;
+        }
+        #subtitle {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        #content {
+            margin-top: 30px;
+        }
+        .message {
+            background-color: #111;
+            border-left: 3px solid #0f0;
+            padding: 15px;
+            margin-bottom: 15px;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        #login-section, #search-section, #message-section {
+            margin-top: 30px;
+            background-color: #111;
+            padding: 15px;
+            border: 1px dashed #0f0;
+        }
+        textarea, input {
+            background-color: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        button {
+            background-color: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background-color: #0f0;
+            color: #000;
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        .hidden {
+            display: none;
+        }
+        #sender-id {
+            margin-top: 10px;
+        }
+        .status {
+            font-size: 12px;
+            color: #0a0;
+            margin-top: 5px;
+        }
+        .error {
+            color: #f00;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Секция входа -->
+    <div id="login-section">
+        <div id="header">
+            <div id="title">> ADVANCE DARKSEND<span class="blink">_</span></div>
+            <div id="subtitle">> Анонимный зашифрованный мессенджер. Без логов.</div>
+        </div>
+        <h3>> ТРЕБУЕТСЯ АУТЕНТИФИКАЦИЯ</h3>
+        <input type="password" id="password-input" placeholder="Введите кодовый ключ доступа">
+        <button onclick="checkPassword()">ПОДТВЕРДИТЬ</button>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <!-- Основной контент (скрыт) -->
+    <div id="content" class="hidden">
+        <div id="header">
+            <div id="title">> ADVANCE DARKSEND v2.4.1<span class="blink">_</span></div>
+            <div id="subtitle">> Защищённый анонимный мессенджер | Сервер: advnet://adv_darksend</div>
+        </div>
+
+        <div id="search-section">
+            <h3>> ПОИСК КОНТАКТА</h3>
+            <input type="text" id="search-input" placeholder="Введите номер или email...">
+            <div id="sender-id">
+                <input type="text" id="sender-input" placeholder="Отправитель (необязательно)">
+            </div>
+            <button onclick="findUser()">ПОИСК</button>
+            <div id="search-status" class="status"></div>
+        </div>
+
+        <div id="message-section" class="hidden">
+            <h3>> ЧАТ С: <span id="receiver-info" style="color:#0f0"></span></h3>
+            <div id="last-message-container"></div>
+            <textarea id="message-content" rows="5" placeholder="Введите сообщение..."></textarea>
+            <button onclick="sendMessage()">ОТПРАВИТЬ (256-bit ECC)</button>
+            <div id="message-status" class="status"></div>
+        </div>
+    </div>
+
+    <script>
+        // Ваш 32-символьный пароль для защиты
+        const ACCESS_PASSWORD = "8RgGj9T1R2lN9K0XgJrgOx9URf6dSW3wEg9nFrZr3Ra00NPXmwfU6Fs4yDzsc38e";
+        let currentReceiver = null;
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            if (input === ACCESS_PASSWORD) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
+                initStorage();
+                document.getElementById('search-status').textContent = "> СТАТУС: Система готова к работе";
+            } else {
+                document.getElementById('error-message').textContent = "> ОШИБКА: Неверный кодовый ключ";
+                document.getElementById('password-input').value = '';
+            }
+        }
+
+        // Остальные функции вашего приложения
+        function initStorage() {
+            if (!localStorage.getItem('darksend-messages')) {
+                localStorage.setItem('darksend-messages', JSON.stringify([
+                    {
+                        sender: "SYSTEM",
+                        receiver: "ALL_USERS",
+                        content: "Добро пожаловать в защищенную сеть ADVANCE DARKSEND",
+                        date: new Date().toISOString()
+                    }
+                ]));
+            }
+        }
+
+        function findUser() {
+            const searchInput = document.getElementById('search-input').value.trim();
+            if (!searchInput) {
+                document.getElementById('search-status').textContent = "> ОШИБКА: Не указан идентификатор";
+                return;
+            }
+
+            currentReceiver = searchInput;
+            document.getElementById('receiver-info').textContent = searchInput;
+            document.getElementById('message-section').classList.remove('hidden');
+            document.getElementById('search-status').textContent = "> СТАТУС: Канал установлен";
+            loadLastMessage();
+        }
+
+        function loadLastMessage() {
+            const container = document.getElementById('last-message-container');
+            container.innerHTML = '';
+            const allMessages = JSON.parse(localStorage.getItem('darksend-messages')) || [];
+            
+            const relevantMessages = allMessages.filter(msg => 
+                msg.receiver === currentReceiver || msg.sender === currentReceiver
+            );
+
+            if (relevantMessages.length === 0) {
+                container.innerHTML = '<div class="message">> Нет истории сообщений.</div>';
+            } else {
+                const lastMessage = relevantMessages[relevantMessages.length - 1];
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message';
+                
+                const direction = lastMessage.receiver === currentReceiver 
+                    ? `> ОТ: ${lastMessage.sender || "АНОНИМ"}\n> КОМУ: ${currentReceiver}` 
+                    : `> ОТ: ${lastMessage.sender || "АНОНИМ"}\n> КОМУ: ${lastMessage.receiver}`;
+                
+                const formattedDate = new Date(lastMessage.date).toLocaleString('ru-RU');
+                
+                messageElement.textContent = `${direction}\n${formattedDate}\n${lastMessage.content}`;
+                container.appendChild(messageElement);
+            }
+        }
+
+        function sendMessage() {
+            const content = document.getElementById('message-content').value.trim();
+            if (!content) {
+                document.getElementById('message-status').textContent = "> ОШИБКА: Пустое сообщение";
+                return;
+            }
+
+            const sender = document.getElementById('sender-input').value.trim() || "АНОНИМ";
+            const allMessages = JSON.parse(localStorage.getItem('darksend-messages')) || [];
+            
+            allMessages.push({
+                sender: sender,
+                receiver: currentReceiver,
+                content: content,
+                date: new Date().toISOString()
+            });
+
+            localStorage.setItem('darksend-messages', JSON.stringify(allMessages));
+            loadLastMessage();
+            document.getElementById('message-content').value = '';
+            document.getElementById('message-status').textContent = `> СТАТУС: Сообщение отправлено (${new Date().toLocaleTimeString()})`;
+        }
+
+        // Обработка нажатия Enter в поле пароля
+        document.getElementById('password-input').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+</html>
