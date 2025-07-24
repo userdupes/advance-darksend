@@ -5,126 +5,328 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADVANCE DARKSEND</title>
     <style>
+        :root {
+            --primary: #00ffaa;
+            --primary-dark: #00cc88;
+            --primary-light: rgba(0, 255, 170, 0.1);
+            --bg: #0a0a0a;
+            --bg-light: #111111;
+            --bg-lighter: #1a1a1a;
+            --text: #f0f0f0;
+            --text-secondary: #b0b0b0;
+            --error: #ff5555;
+            --success: #00ffaa;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
+        
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-mono);
             margin: 0;
-            padding: 20px;
-            line-height: 1.5;
+            padding: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 170, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 170, 0.05) 0%, transparent 20%);
         }
+        
+        .container {
+            width: 100%;
+            max-width: 700px;
+            padding: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         #header {
-            border-bottom: 1px dashed #0f0;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--primary-light);
+            position: relative;
         }
+        
+        #header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: var(--primary);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { width: 100px; opacity: 1; }
+            50% { width: 150px; opacity: 0.7; }
+            100% { width: 100px; opacity: 1; }
+        }
+        
         #title {
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 0 0 5px #0f0;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
         }
+        
         #subtitle {
             font-size: 14px;
-            opacity: 0.7;
+            color: var(--text-secondary);
+            line-height: 1.4;
         }
-        #content {
-            margin-top: 30px;
+        
+        .card {
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 170, 0.1);
+            transition: all 0.3s ease;
         }
-        .message {
-            background-color: #111;
-            border-left: 3px solid #0f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            word-break: break-word;
-            white-space: pre-wrap;
+        
+        .card:hover {
+            border-color: rgba(0, 255, 170, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
-        #login-section, #search-section, #message-section {
-            margin-top: 30px;
-            background-color: #111;
-            padding: 15px;
-            border: 1px dashed #0f0;
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
         }
-        textarea, input {
-            background-color: #000;
-            color: #0f0;
-            border: 1px solid #0f0;
+        
+        .card-title::before {
+            content: ">";
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        input, textarea {
+            background-color: var(--bg-lighter);
+            color: var(--text);
+            border: 1px solid rgba(0, 255, 170, 0.2);
+            border-radius: 6px;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-family: 'Courier New', monospace;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            transition: all 0.3s;
+            box-sizing: border-box;
         }
-        button {
-            background-color: #000;
-            color: #0f0;
-            border: 1px solid #0f0;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 255, 170, 0.1);
+            background-color: var(--bg-light);
         }
-        button:hover {
-            background-color: #0f0;
+        
+        input::placeholder, textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 25px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: var(--font-mono);
+            box-shadow: 0 4px 15px rgba(0, 255, 170, 0.2);
         }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 170, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            background-color: var(--bg-lighter);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            border-left: 3px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 170, 0.03) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--primary);
+        }
+        
+        .message-time {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .status {
+            font-size: 13px;
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            display: inline-block;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .error {
+            font-size: 14px;
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 4px;
+            background-color: rgba(255, 85, 85, 0.1);
+            color: var(--error);
+            border-left: 3px solid var(--error);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .flex-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .flex-row input {
+            flex: 1;
+        }
+        
         .blink {
             animation: blink 1s infinite;
         }
+        
         @keyframes blink {
             50% { opacity: 0; }
         }
-        .hidden {
-            display: none;
+        
+        footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 20px;
+            opacity: 0.7;
         }
-        #sender-id {
-            margin-top: 10px;
-        }
-        .status {
-            font-size: 12px;
-            color: #0a0;
-            margin-top: 5px;
-        }
-        .error {
-            color: #f00;
-            margin-top: 10px;
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            #title {
+                font-size: 24px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                width: 100%;
+            }
+            
+            .flex-row {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Секция входа -->
-    <div id="login-section">
+    <div class="container" id="login-section">
         <div id="header">
-            <div id="title">> ADVANCE DARKSEND<span class="blink">_</span></div>
-            <div id="subtitle">> Анонимный зашифрованный мессенджер. Без логов.</div>
+            <div id="title">ADVANCE DARKSEND<span class="blink">_</span></div>
+            <div id="subtitle">Анонимный зашифрованный мессенджер. Без логов. Без отслеживания.</div>
         </div>
-        <h3>> ТРЕБУЕТСЯ АУТЕНТИФИКАЦИЯ</h3>
-        <input type="password" id="password-input" placeholder="Введите кодовый ключ доступа">
-        <button onclick="checkPassword()">ПОДТВЕРДИТЬ</button>
-        <div id="error-message" class="error"></div>
+        
+        <div class="card">
+            <div class="card-title">Требуется аутентификация</div>
+            <input type="password" id="password-input" placeholder="Введите кодовый ключ доступа">
+            <button class="btn" onclick="checkPassword()">Подтвердить</button>
+            <div id="error-message" class="error hidden"></div>
+        </div>
     </div>
 
     <!-- Основной контент (скрыт) -->
-    <div id="content" class="hidden">
+    <div class="container hidden" id="content">
         <div id="header">
-            <div id="title">> ADVANCE DARKSEND v2.4.1<span class="blink">_</span></div>
-            <div id="subtitle">> Защищённый анонимный мессенджер | Сервер: advnet://adv_darksend</div>
+            <div id="title">ADVANCE DARKSEND v2.4.1<span class="blink">_</span></div>
+            <div id="subtitle">Защищённый анонимный мессенджер | Сервер: advnet://adv_darksend</div>
         </div>
 
-        <div id="search-section">
-            <h3>> ПОИСК КОНТАКТА</h3>
+        <div class="card">
+            <div class="card-title">Поиск контакта</div>
             <input type="text" id="search-input" placeholder="Введите номер или email...">
-            <div id="sender-id">
+            <div class="flex-row">
                 <input type="text" id="sender-input" placeholder="Отправитель (необязательно)">
+                <button class="btn" onclick="findUser()">Поиск</button>
             </div>
-            <button onclick="findUser()">ПОИСК</button>
-            <div id="search-status" class="status"></div>
+            <div id="search-status" class="status hidden"></div>
         </div>
 
-        <div id="message-section" class="hidden">
-            <h3>> ЧАТ С: <span id="receiver-info" style="color:#0f0"></span></h3>
+        <div class="card hidden" id="message-section">
+            <div class="card-title">Чат с: <span id="receiver-info" style="color: var(--primary)"></span></div>
             <div id="last-message-container"></div>
             <textarea id="message-content" rows="5" placeholder="Введите сообщение..."></textarea>
-            <button onclick="sendMessage()">ОТПРАВИТЬ (256-bit ECC)</button>
-            <div id="message-status" class="status"></div>
+            <button class="btn" onclick="sendMessage()">Отправить (256-bit ECC)</button>
+            <div id="message-status" class="status hidden"></div>
         </div>
+        
+        <footer>
+            ADVANCE DARKSEND &copy; 2023 | Все соединения зашифрованы
+        </footer>
     </div>
 
     <script>
@@ -139,13 +341,20 @@
                 document.getElementById('content').classList.remove('hidden');
                 initStorage();
                 document.getElementById('search-status').textContent = "> СТАТУС: Система готова к работе";
+                document.getElementById('search-status').classList.remove('hidden');
             } else {
-                document.getElementById('error-message').textContent = "> ОШИБКА: Неверный кодовый ключ";
+                const errorEl = document.getElementById('error-message');
+                errorEl.textContent = "> ОШИБКА: Неверный кодовый ключ";
+                errorEl.classList.remove('hidden');
                 document.getElementById('password-input').value = '';
+                
+                // Анимация ошибки
+                errorEl.style.animation = 'none';
+                errorEl.offsetHeight; // Trigger reflow
+                errorEl.style.animation = 'shake 0.5s linear';
             }
         }
 
-        // Остальные функции вашего приложения
         function initStorage() {
             if (!localStorage.getItem('darksend-messages')) {
                 localStorage.setItem('darksend-messages', JSON.stringify([
@@ -162,14 +371,20 @@
         function findUser() {
             const searchInput = document.getElementById('search-input').value.trim();
             if (!searchInput) {
-                document.getElementById('search-status').textContent = "> ОШИБКА: Не указан идентификатор";
+                const statusEl = document.getElementById('search-status');
+                statusEl.textContent = "> ОШИБКА: Не указан идентификатор";
+                statusEl.classList.remove('hidden');
                 return;
             }
 
             currentReceiver = searchInput;
             document.getElementById('receiver-info').textContent = searchInput;
             document.getElementById('message-section').classList.remove('hidden');
-            document.getElementById('search-status').textContent = "> СТАТУС: Канал установлен";
+            
+            const statusEl = document.getElementById('search-status');
+            statusEl.textContent = "> СТАТУС: Канал установлен";
+            statusEl.classList.remove('hidden');
+            
             loadLastMessage();
         }
 
@@ -189,21 +404,34 @@
                 const messageElement = document.createElement('div');
                 messageElement.className = 'message';
                 
-                const direction = lastMessage.receiver === currentReceiver 
-                    ? `> ОТ: ${lastMessage.sender || "АНОНИМ"}\n> КОМУ: ${currentReceiver}` 
-                    : `> ОТ: ${lastMessage.sender || "АНОНИМ"}\n> КОМУ: ${lastMessage.receiver}`;
+                const header = document.createElement('div');
+                header.className = 'message-header';
+                header.innerHTML = `> ОТ: <span style="color:var(--primary)">${lastMessage.sender || "АНОНИМ"}</span> | КОМУ: <span style="color:var(--primary)">${lastMessage.receiver === currentReceiver ? currentReceiver : lastMessage.receiver}</span>`;
                 
-                const formattedDate = new Date(lastMessage.date).toLocaleString('ru-RU');
+                const time = document.createElement('div');
+                time.className = 'message-time';
+                time.textContent = new Date(lastMessage.date).toLocaleString('ru-RU');
                 
-                messageElement.textContent = `${direction}\n${formattedDate}\n${lastMessage.content}`;
+                const content = document.createElement('div');
+                content.style.marginTop = '10px';
+                content.textContent = lastMessage.content;
+                
+                messageElement.appendChild(header);
+                messageElement.appendChild(time);
+                messageElement.appendChild(content);
                 container.appendChild(messageElement);
+                
+                // Плавная прокрутка к сообщению
+                messageElement.scrollIntoView({ behavior: 'smooth' });
             }
         }
 
         function sendMessage() {
             const content = document.getElementById('message-content').value.trim();
             if (!content) {
-                document.getElementById('message-status').textContent = "> ОШИБКА: Пустое сообщение";
+                const statusEl = document.getElementById('message-status');
+                statusEl.textContent = "> ОШИБКА: Пустое сообщение";
+                statusEl.classList.remove('hidden');
                 return;
             }
 
@@ -220,7 +448,15 @@
             localStorage.setItem('darksend-messages', JSON.stringify(allMessages));
             loadLastMessage();
             document.getElementById('message-content').value = '';
-            document.getElementById('message-status').textContent = `> СТАТУС: Сообщение отправлено (${new Date().toLocaleTimeString()})`;
+            
+            const statusEl = document.getElementById('message-status');
+            statusEl.textContent = `> СТАТУС: Сообщение отправлено (${new Date().toLocaleTimeString()})`;
+            statusEl.classList.remove('hidden');
+            
+            // Скрываем статус через 3 секунды
+            setTimeout(() => {
+                statusEl.classList.add('hidden');
+            }, 3000);
         }
 
         // Обработка нажатия Enter в поле пароля
@@ -229,6 +465,17 @@
                 checkPassword();
             }
         });
+        
+        // Анимация тряски для ошибок
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
